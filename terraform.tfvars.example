@@ -1,0 +1,64 @@
+environment = "prod"
+location    = "germanywestcentral"
+
+tfe_organization  = "your-org"
+network_workspace = "cuberai-100-network-prod"
+shared_workspace  = "cuberai-200-shared-prod"
+
+cluster_name       = "aks-cuberai-prod"
+kubernetes_version = "1.34" # az aks get-versions -l <region> -o table
+sku_tier           = "Standard"
+
+private_cluster_enabled = true
+
+admin_group_object_ids = ["00000000-0000-0000-0000-000000000000"] # Entra ID group for cluster admins
+
+network = {
+  pod_cidr       = "10.244.0.0/16"
+  service_cidr   = "172.16.0.0/16"
+  dns_service_ip = "172.16.0.10"
+}
+
+# Peak IPs on the node subnet: 17 nodes (5+8+4) + 3 surge (1/pool) + 1 ingress ILB = 21
+max_surge = "1"
+
+system_pool = {
+  vm_size   = "Standard_D4ds_v5"
+  min_count = 3
+  max_count = 5
+}
+
+user_pools = {
+  apps = {
+    worker_pool_vm_size     = "Standard_D8ds_v5"
+    worker_pool_min_count   = 4
+    worker_pool_max_count   = 8
+    worker_pool_node_labels = { workload = "apps" }
+  }
+
+  data = {
+    worker_pool_vm_size     = "Standard_E4ds_v5" # memory-optimised — confirm against actual data workloads
+    worker_pool_min_count   = 2
+    worker_pool_max_count   = 4
+    worker_pool_node_labels = { workload = "data" }
+    worker_pool_node_taints = ["workload=data:NoSchedule"]
+  }
+
+  # Optional GPU pool — check regional quota first; install the NVIDIA device plugin.
+  # gpu = {
+  #   worker_pool_vm_size      = "Standard_NC4as_T4_v3"
+  #   worker_pool_min_count    = 0
+  #   worker_pool_max_count    = 3
+  #   worker_pool_zones        = ["1"]
+  #   worker_pool_os_sku       = "Ubuntu"
+  #   worker_pool_os_disk_type = "Managed"
+  #   worker_pool_node_labels  = { workload = "gpu" }
+  #   worker_pool_node_taints  = ["sku=gpu:NoSchedule"]
+  # }
+}
+
+tags = {
+  project     = "cuber-ai"
+  environment = "prod"
+  managed_by  = "terraform"
+}
