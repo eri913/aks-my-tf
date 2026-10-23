@@ -228,3 +228,10 @@ variable "maintenance_window" {
   })
   default = {}
 }
+
+variable "node_provisioning_mode" {
+  description = "Manual = node pools + Cluster Autoscaler. Auto = Node Auto Provisioning (Karpenter)."
+  type        = string
+  default     = "Manual"
+  nullable    = false
+}
