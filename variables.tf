@@ -84,10 +84,15 @@ variable "node_subnet_id" {
 variable "network" {
   description = "Azure CNI Overlay + Cilium. CIDRs must not overlap the VNet, peered networks or on-prem."
   type = object({
-    pod_cidr       = optional(string, "10.244.0.0/16")
-    service_cidr   = optional(string, "172.16.0.0/16")
-    dns_service_ip = optional(string, "172.16.0.10")
-    outbound_type  = optional(string, "loadBalancer") # userDefinedRouting if egress goes via a hub firewall
+    network_plugin      = optional(string, "azure")
+    network_plugin_mode = optional(string, "overlay") # pods get IPs from pod_cidr, not the VNet
+    network_data_plane  = optional(string, "cilium")  # eBPF dataplane (Azure CNI powered by Cilium)
+    network_policy      = optional(string, "cilium")  # must be "cilium" when network_data_plane = "cilium"
+    pod_cidr            = optional(string, "10.244.0.0/16")
+    service_cidr        = optional(string, "172.16.0.0/16")
+    dns_service_ip      = optional(string, "172.16.0.10")
+    load_balancer_sku   = optional(string, "standard")
+    outbound_type       = optional(string, "loadBalancer") # userDefinedRouting if egress goes via a hub firewall
   })
   default = {}
 }
