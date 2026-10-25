@@ -7,8 +7,3 @@ terraform {
     }
   }
 }
-
-provider "azurerm" {
-  features {}
-  # ARM_SUBSCRIPTION_ID env var
-}
