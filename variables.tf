@@ -27,6 +27,49 @@ variable "node_subnet_name" {
   type        = string
 }
 
+variable "private_endpoint_subnet_name" {
+  description = "Existing subnet for the ACR / Key Vault private endpoints"
+  type        = string
+}
+
+variable "private_dns_zone_ids" {
+  description = "Central private DNS zones in the hub"
+  type = object({
+    acr      = string # privatelink.azurecr.io
+    keyvault = string # privatelink.vaultcore.azure.net
+  })
+}
+
+# ── Container Registry ─────────────────────────────────────────────────────────────
+
+variable "acr_name" {
+  description = "ACR name — globally unique, alphanumeric only, 5-50 chars"
+  type        = string
+}
+
+variable "acr_public_network_access_enabled" {
+  description = "Keep true while CI/laptops push from outside the VNet. Nodes always pull via the private endpoint."
+  type        = bool
+  default     = true
+}
+
+# ── Key Vault ─────────────────────────────────────────────────────────────
+
+variable "key_vault_name" {
+  description = "Key Vault name — globally unique, 3-24 chars"
+  type        = string
+}
+
+variable "key_vault_public_network_access_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "log_retention_days" {
+  type    = number
+  default = 30
+}
+
 # ── Permissions granted by other teams ──────────────────────────────────────
 
 variable "create_network_role_assignments" {
