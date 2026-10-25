@@ -1,6 +1,22 @@
 # Only the inputs this layer sets are exposed here. Everything else uses the defaults in
 # modules/aks/variables.tf (auth flags, add-ons, autoscaler profile, maintenance windows, zones, ...).
 
+variable "auto_scaler_profile" {
+  description = "Cluster Autoscaler settings — unset attributes (null) use the defaults in modules/aks/variables.tf"
+  type = object({
+    balance_similar_node_groups      = optional(bool)
+    expander                         = optional(string)
+    scale_down_delay_after_add       = optional(string)
+    scale_down_unneeded              = optional(string)
+    scale_down_utilization_threshold = optional(string)
+    max_graceful_termination_sec     = optional(string)
+    skip_nodes_with_local_storage    = optional(bool)
+    skip_nodes_with_system_pods      = optional(bool)
+  })
+  default  = {}
+  nullable = false
+}
+
 # ── Remote state ─────────────────────────────────────────────────────────────
 
 variable "tfe_organization" {
